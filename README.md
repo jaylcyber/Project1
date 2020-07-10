@@ -4,9 +4,34 @@ The files in this repository were used to configure the network depicted below.
 
 ![Azure Cloud Infra Diagram File](Images/AzureCloudInfraDiagram.png)
 
-These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the _____ file may be used to install only certain pieces of it, such as Filebeat.
+These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the _filebeat-playbook____ file may be used to install only certain pieces of it, such as Filebeat.
 
   - _TODO: Enter the playbook file._
+---
+- name: Installing and Launch Filebeat
+  hosts: webservers
+  become: yes
+  tasks:
+  - name: Download filebeat .deb file
+    command: curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.4.0-amd64.deb
+
+  - name: Install filebeat .deb
+    command: dpkg -i filebeat-7.4.0-amd64.deb
+
+  - name: Drop in filebeat.yml
+    copy:
+      src: /etc/ansible/files/filebeat-config.yml
+      dest: /etc/filebeat/filebeat.yml
+      mode: '0644'  # added by Ethan
+
+  - name: Enable and Configure System Module
+    command: filebeat modules enable system
+
+  - name: Setup filebeat
+    command: filebeat setup
+
+  - name: Start filebeat service
+    command: service filebeat start  
 
 This document contains the following details:
 - Description of the Topology
@@ -39,6 +64,7 @@ _Note: Use the [Markdown Table Generator](http://www.tablesgenerator.com/markdow
 | Jump Box | Gateway     | 10.0.0.4   | Linux            |
 | Web-1    | DVWA server | 10.0.0.5   | Linux            |
 | Web-2    | DVWA server | 10.0.0.6   | Linux            |
+| Web-3    | DVWA server | 10.0.0.7   | Linux            |
 | ELK Server | network traffic monitor | 10.1.0.4 | Linux  |
 
 ### Access Policies
